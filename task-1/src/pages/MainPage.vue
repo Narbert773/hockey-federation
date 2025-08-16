@@ -4,6 +4,7 @@
       <Header />
       <div class="main__wrapper">
         <Search v-model:searchQuery="searchQuery" />
+        <v-btn color="primary" @click="toggleSort" class="sort-button">Сортировка</v-btn>
         <Table :teams="filteredTeams" />
       </div>
     </div>
@@ -20,15 +21,26 @@ import type { Team } from '../interfaces/team.interface';
 
 const teams = ref<Team[]>([]);
 const searchQuery = ref<string>('');
+const sortOrder = ref<'asc' | 'desc'>('desc');
+
+const sortedTeams = computed(() => {
+  return [...teams.value].sort((a, b) => {
+    return sortOrder.value === 'asc' ? a.points - b.points : b.points - a.points;
+  });
+});
+
+const filteredTeams = computed(() => {
+  if (!searchQuery.value) return sortedTeams.value;
+  return sortedTeams.value.filter((team) => team.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+});
+
+const toggleSort = () => {
+  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+};
 
 onMounted(async () => {
   const data = await fetchTeams();
   teams.value = data.teams;
-});
-
-const filteredTeams = computed(() => {
-  if (!searchQuery.value) return teams.value;
-  return teams.value.filter((team) => team.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
 });
 </script>
 
@@ -43,6 +55,10 @@ const filteredTeams = computed(() => {
 
   &__wrapper {
     width: 80%;
+
+    .sort-button {
+      margin-bottom: 20px;
+    }
   }
 }
 </style>

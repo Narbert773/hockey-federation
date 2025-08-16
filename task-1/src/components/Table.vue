@@ -9,7 +9,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="team in teams" :key="team.name">
+        <tr v-for="team in teams" :key="team.name" :class="{ 'highlight-team': team.points === maxPoints }">
           <td>{{ team.name }}</td>
           <td>{{ team.city }}</td>
           <td>{{ team.points }}</td>
@@ -21,11 +21,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { Team } from '../interfaces/team.interface';
 
-defineProps<{
+const props = defineProps<{
   teams: Team[];
 }>();
+
+const maxPoints = computed(() => {
+  return Math.max(...props.teams.map((team) => team.points));
+});
 </script>
 
 <style lang="scss" scoped>
@@ -35,5 +40,9 @@ defineProps<{
 
 .alert-message {
   text-align: center;
+}
+
+.highlight-team {
+  background-color: lightblue;
 }
 </style>
