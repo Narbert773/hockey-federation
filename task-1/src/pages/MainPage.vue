@@ -21,24 +21,27 @@ import type { Team } from '../interfaces/team.interface';
 
 const teams = ref<Team[]>([]);
 const searchQuery = ref<string>('');
-const sortOrder = ref<'asc' | 'desc'>('desc');
+const sortOrder = ref<'asc' | 'desc' | 'none'>('none');
 
-const sortedTeams = computed(() => {
-  return [...teams.value].sort((a, b) => {
+const sortedTeams = computed<Team[]>(() => {
+  if (sortOrder.value === 'none') {
+    return [...teams.value];
+  }
+  return [...teams.value].sort((a: Team, b: Team) => {
     return sortOrder.value === 'asc' ? a.points - b.points : b.points - a.points;
   });
 });
 
-const filteredTeams = computed(() => {
+const filteredTeams = computed<Team[]>(() => {
   if (!searchQuery.value) return sortedTeams.value;
-  return sortedTeams.value.filter((team) => team.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+  return sortedTeams.value.filter((team: Team) => team.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
 });
 
-const toggleSort = () => {
-  sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
+const toggleSort = (): void => {
+  sortOrder.value = sortOrder.value === 'none' ? 'desc' : sortOrder.value === 'desc' ? 'asc' : 'desc';
 };
 
-onMounted(async () => {
+onMounted(async (): Promise<void> => {
   const data = await fetchTeams();
   teams.value = data.teams;
 });

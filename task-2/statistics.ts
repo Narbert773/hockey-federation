@@ -1,4 +1,10 @@
-function calculateStats<T>(items: T[], extractor: (item: T) => number) {
+interface Stats {
+  min: number;
+  max: number;
+  average: number;
+}
+
+function calculateStats<T>(items: T[], extractor: (item: T) => number): Stats | null {
   if (items.length === 0) {
     return null;
   }
@@ -6,7 +12,7 @@ function calculateStats<T>(items: T[], extractor: (item: T) => number) {
   const values = items.map(extractor);
   const min = Math.min(...values);
   const max = Math.max(...values);
-  const average = values.reduce((acc, curr) => acc + curr, 0) / values.length;
+  const average = values.reduce((acc: number, curr: number) => acc + curr, 0) / values.length;
 
   return { min, max, average };
 }
@@ -27,4 +33,4 @@ const teams: Team[] = [
   { name: 'Казанские Тигры', city: 'Казань', points: 41 },
 ];
 
-const stats = calculateStats(teams, (team) => team.points); // { min: 29, max: 52, average: 41 }
+const stats = calculateStats(teams, (team: Team) => team.points); // { min: 29, max: 52, average: 41 }

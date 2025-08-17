@@ -28,8 +28,8 @@ const props = defineProps<{
   teams: Team[];
 }>();
 
-const maxPoints = computed(() => {
-  return Math.max(...props.teams.map((team) => team.points));
+const maxPoints = computed<number>(() => {
+  return Math.max(...props.teams.map((team: Team) => team.points));
 });
 </script>
 
